@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import times from '../css/times.svg';
-import circle from '../css/circle.svg';
 
 class PlayerPanel extends  Component {
 
@@ -11,26 +9,18 @@ class PlayerPanel extends  Component {
 
     render () {
         return (
-            <div className='player-panel'>
-                <div className='icon'>
-                    <div onClick={this.selectPlayer.bind(this, "X")} className = {this.props.classForPlayer.playerTimes}>
-                        <div>
-                            <img className = 'img' src={times} alt = 'times'/>
-                        </div>
-                        <div className='win'>
-                            <p>{this.props.victory.victoryTimes}</p>
-                        </div>
+            <div className = 'player-panel'>
+                <div className = 'icon'>
+                    <div onClick = {this.selectPlayer.bind(this, "X")}>
+                        <p className = {this.props.classForPlayer.playerTimes}>X</p>
+                        <p>{this.props.victory.victoryTimes}</p>
                     </div>
-                    <div onClick={this.selectPlayer.bind(this, "O")} className = {this.props.classForPlayer.playerCircle}>
-                        <div>
-                            <img className = 'img' src={circle} alt = 'circle'/>
-                        </div>
-                        <div className='win'>
-                            <p>{this.props.victory.victoryCircle}</p>
-                        </div>
+                    <div onClick = {this.selectPlayer.bind(this, "O")}>
+                        <p className = {this.props.classForPlayer.playerCircle}>O</p>
+                        <p>{this.props.victory.victoryCircle}</p>
                     </div>
                 </div>
-                <p>{this.props.textForPlayer} </p>
+                <p>{this.props.textForPlayer}</p>
             </div>
         );
     }

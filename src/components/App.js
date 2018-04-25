@@ -4,7 +4,7 @@ import PlayerPanel from './PlayerPanel.js';
 import Game from './Game.js';
 
 class App extends Component {
-    constructor(){
+    constructor() {
         super();
         this.allGameNull = new Array(9).fill(null);
         this.gameArray = new Array(9).fill(null);
@@ -17,8 +17,6 @@ class App extends Component {
             [2, 5, 8],
             [0, 4, 8],
             [2, 4, 6]];
-
-
         this.state = {
             auto: false,
             gameOver: false,
@@ -35,6 +33,7 @@ class App extends Component {
                 playerCircle: ""
             },
             allGame: this.allGameNull,
+            disabledSelect: false
         };
 
         this.changeLevel = this.changeLevel.bind(this);
@@ -46,6 +45,7 @@ class App extends Component {
         this.checkWin = this.checkWin.bind(this);
         this.automaticMove = this.automaticMove.bind(this);
         this.levelGame = this.levelGame.bind(this);
+        this.clearGame = this.clearGame.bind(this);
     }
 
     changeLevel(newLevel) {
@@ -53,6 +53,7 @@ class App extends Component {
     }
 
     changePlayer(newPlayer) {
+
         this.setState(prevState => {
             if (prevState.currentPlayer) {
                 return prevState;
@@ -66,7 +67,8 @@ class App extends Component {
         }
     }
 
-    changeVictory(){
+    changeVictory() {
+
         let victoryPlayer = this.state.currentPlayer === "X" ? "victoryTimes":  "victoryCircle";
 
         let newVictory = Object.assign({}, this.state.victory, {
@@ -76,33 +78,60 @@ class App extends Component {
         this.setState({victory: newVictory});
     }
 
-    changeNewGame(playNewGame){
+    changeNewGame(playNewGame) {
 
         this.gameArray = this.allGameNull;
         this.changeTextForPlayer(this.player);
 
-        this.setState({newGame: playNewGame ? playNewGame : false,
+        this.setState({newGame: playNewGame,
             allGame: this.allGameNull,
             gameOver: false,
             auto: false,
-            currentPlayer: this.player});
+            currentPlayer: this.player,
+            disabledSelect: false});
     }
 
-    changeAllGame(item){
+    clearGame(clear) {
 
-        if(this.state.gameOver || !this.state.currentPlayer || this.state.auto) {return;}
+        if (clear) {
+
+            this.gameArray = new Array(9).fill(null);
+            this.player = null;
+
+            this.setState({
+                auto: false,
+                gameOver: false,
+                level: "easy",
+                currentPlayer: null,
+                victory: {
+                    victoryTimes: 0,
+                    victoryCircle:0
+                },
+                newGame: true,
+                textForPlayer: "Выберите игрока",
+                classForPlayer: {
+                    playerTimes: "",
+                    playerCircle: ""
+                },
+                allGame: this.allGameNull,
+                disabledSelect: false
+            });
+        }
+    }
+    changeAllGame(item) {
+
+        if (this.state.gameOver || !this.state.currentPlayer || this.state.auto) {return;}
         this.gameArray = this.state.allGame.slice();
 
-        if(this.gameArray[item]) {
+        if (this.gameArray[item]) {
             return;
         }
         this.gameArray[item] = this.state.currentPlayer;
 
-        this.setState({allGame: this.gameArray, auto: true}, () => {
-            setTimeout(this.automaticMove.bind(this), 2000);
+        this.setState({allGame: this.gameArray, auto: true, disabledSelect: true}, () => {
+            setTimeout(this.automaticMove.bind(this), 1000);
         });
         this.checkWin();
-
     }
 
 
@@ -113,7 +142,7 @@ class App extends Component {
         }
 
         let gameArrayFilter = [];
-        this.gameArray.forEach(function (item, i) {
+        this.gameArray.forEach (function (item, i) {
             if (!item) {
                 gameArrayFilter.push(i);
             }
@@ -123,11 +152,13 @@ class App extends Component {
         let indexArrayFilter = gameArrayFilter[rand];
 
 
-        if(this.state.level === "easy") {
+        if (this.state.level === "easy") {
             this.gameArray[indexArrayFilter] = this.state.currentPlayer;
-        } else if(this.state.level === "medium") {
+        } else
+        if (this.state.level === "medium") {
             this.levelGame(indexArrayFilter, false);
-        } else if(this.state.level === "hard") {
+        } else
+        if (this.state.level === "hard") {
             this.levelGame(indexArrayFilter, true);
         }
 
@@ -139,11 +170,11 @@ class App extends Component {
 
         let smallIndex = [];
         let end = false;
-        for(let i = 0; i < this.winningCombinations.length; ++i){
+        for (let i = 0; i < this.winningCombinations.length; ++i) {
             let countGeneralPlayer = 0;
             let countAutoPlayer = 0;
             let index = [];
-            this.winningCombinations[i].forEach((j) => {
+            this.winningCombinations[i].forEach ((j) => {
                 switch (this.gameArray[j]) {
                     case this.player:
                         countGeneralPlayer++;
@@ -159,16 +190,17 @@ class App extends Component {
                 }
             });
 
-            if(!hard){
+            if (!hard) {
                 if (countGeneralPlayer === 2 && index.length) {
                     this.gameArray[index[0]] = this.state.currentPlayer;
                     end = true;
                     break;
-                } else if (countGeneralPlayer === 1 && index.length) {
+                } else
+                if (countGeneralPlayer === 1 && index.length) {
                     smallIndex.push(...index);
                 }
             } else {
-                if(countAutoPlayer === 2 && index.length) {
+                if (countAutoPlayer === 2 && index.length) {
                     this.gameArray[index[0]] = this.state.currentPlayer;
                     end = true;
                     break;
@@ -183,9 +215,9 @@ class App extends Component {
 
         }
 
-        if(end) {return;}
+        if (end) {return;}
 
-        if(smallIndex.length > 0) {
+        if (smallIndex.length > 0) {
             let rand = Math.floor(Math.random() * smallIndex.length);
             this.gameArray[smallIndex[rand]] = this.state.currentPlayer;
         } else {
@@ -193,12 +225,13 @@ class App extends Component {
         }
     }
 
-    checkWin(){
+    checkWin() {
+
         let win = false;
 
-        this.winningCombinations.forEach((item) => {
+        this.winningCombinations.forEach ((item) => {
             let count = 0;
-            item.forEach((j) => {
+            item.forEach ((j) => {
                 if (this.gameArray[j] === this.state.currentPlayer) {
                     count++;
                 }
@@ -219,7 +252,8 @@ class App extends Component {
 
     }
 
-    changeTextForPlayer(newPlayer){
+    changeTextForPlayer(newPlayer) {
+
         this.setState((prevState) => {
             return ({
                 textForPlayer: (!prevState.currentPlayer) ? "Выберите игрока" : `Ходит игрок  ${newPlayer}`,
@@ -233,12 +267,15 @@ class App extends Component {
 
     render() {
         return (
-            <div className='main-block'>
-                <LevelGame currentLevel={this.state.level} changeLevel={this.changeLevel} />
-                <PlayerPanel currentPlayer={this.state.currentPlayer} changePlayer={this.changePlayer}
-                             textForPlayer={this.state.textForPlayer} victory={this.state.victory}
+            <div className ='main-block'>
+                <LevelGame currentLevel = {this.state.level} changeLevel = {this.changeLevel} gameOver = {this.state.gameOver} disabledSelect = {this.state.disabledSelect}/>
+                <PlayerPanel currentPlayer = {this.state.currentPlayer} changePlayer = {this.changePlayer}
+                             textForPlayer = {this.state.textForPlayer} victory = {this.state.victory}
                              classForPlayer = {this.state.classForPlayer}/>
-                <Game changeNewGame={this.changeNewGame} allGame = {this.state.allGame} changeAllGame={this.changeAllGame}/>
+                <Game changeNewGame = { this.changeNewGame}
+                      allGame = {this.state.allGame}
+                      changeAllGame = {this.changeAllGame}
+                      clearGame = {this.clearGame}/>
             </div>
         );
     }
