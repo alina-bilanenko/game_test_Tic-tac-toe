@@ -42,6 +42,7 @@ html, body {
 
 .game {
   background-color: #95caff;
+  position: relative;
 }
 
 .level-game {
@@ -140,4 +141,10 @@ td {
   color: crimson;
 }
 
-
+.cross-line {
+  display: none;
+  position: absolute;
+  width: 20em;
+  height: 5px;
+  background-color: #ff1e00;
+}

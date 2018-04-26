@@ -120,7 +120,7 @@ class App extends Component {
     }
     changeAllGame(item) {
 
-        if (this.state.gameOver || !this.state.currentPlayer || this.state.auto) {return;}
+        if (this.state.gameOver || !this.state.currentPlayer || (this.state.auto && !this.state.level === "together")) {return;}
         this.gameArray = this.state.allGame.slice();
 
         if (this.gameArray[item]) {
@@ -244,6 +244,7 @@ class App extends Component {
         if (win) {
             this.changeVictory();
             this.setState({gameOver: win});
+            this.changeTextForPlayer(this.state.currentPlayer);
         } else {
             let newPlayer = this.state.currentPlayer === "X" ? "O" : "X";
             this.changeTextForPlayer(newPlayer);
@@ -255,8 +256,8 @@ class App extends Component {
     changeTextForPlayer(newPlayer) {
 
         this.setState((prevState) => {
-            return ({
-                textForPlayer: (!prevState.currentPlayer) ? "Выберите игрока" : `Ходит игрок  ${newPlayer}`,
+           return ({
+                textForPlayer: (!prevState.currentPlayer) ? "Выберите игрока" : (prevState.gameOver) ? `ПОБЕДИЛ ИГРОК ${newPlayer}` : `Ходит игрок  ${newPlayer}`,
                 classForPlayer: {
                     playerTimes: (newPlayer === "X") ? "activePlayer" : "",
                     playerCircle: (newPlayer === "O") ? "activePlayer" : ""
@@ -275,7 +276,8 @@ class App extends Component {
                 <Game changeNewGame = { this.changeNewGame}
                       allGame = {this.state.allGame}
                       changeAllGame = {this.changeAllGame}
-                      clearGame = {this.clearGame}/>
+                      clearGame = {this.clearGame}
+                      gameArray = {this.state.gameOver}/>
             </div>
         );
     }

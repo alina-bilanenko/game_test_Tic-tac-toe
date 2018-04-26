@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import CrossLine from "./CrossLine.js";
 
 class Game extends Component {
     constructor(props) {
@@ -22,6 +23,7 @@ class Game extends Component {
     render () {
         return (
             <div className ='game'>
+                <CrossLine gameArray = {this.props.gameArray}/>
                 <table>
                     <tbody>
                     <tr>
