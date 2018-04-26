@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import LevelGame from './LevelGame.js';
 import PlayerPanel from './PlayerPanel.js';
 import Game from './Game.js';
+import ErrorBoundary from './ErrorBoundary.js';
 
 class App extends Component {
     constructor() {
@@ -38,12 +39,12 @@ class App extends Component {
 
         this.changeLevel = this.changeLevel.bind(this);
         this.changePlayer = this.changePlayer.bind(this);
-        this.changeVictory = this.changeVictory.bind(this);
+        // this.changeVictory = this.changeVictory.bind(this);
         this.changeNewGame = this.changeNewGame.bind(this);
-        this.changeTextForPlayer = this.changeTextForPlayer.bind(this);
+        // this.changeTextForPlayer = this.changeTextForPlayer.bind(this);
         this.changeAllGame = this.changeAllGame.bind(this);
-        this.checkWin = this.checkWin.bind(this);
-        this.automaticMove = this.automaticMove.bind(this);
+        // this.checkWin = this.checkWin.bind(this);
+        // this.automaticMove = this.automaticMove.bind(this);
         this.levelGame = this.levelGame.bind(this);
         this.clearGame = this.clearGame.bind(this);
     }
@@ -170,6 +171,8 @@ class App extends Component {
 
         let smallIndex = [];
         let end = false;
+        let hardBlockMove = [];
+
         for (let i = 0; i < this.winningCombinations.length; ++i) {
             let countGeneralPlayer = 0;
             let countAutoPlayer = 0;
@@ -205,9 +208,7 @@ class App extends Component {
                     end = true;
                     break;
                 } else if (countGeneralPlayer === 2 && index.length) {
-                    this.gameArray[index[0]] = this.state.currentPlayer;
-                    end = true;
-                    break;
+                    hardBlockMove.push(index[0]);
                 } else if (countAutoPlayer === 1 && index.length) {
                     smallIndex.push(...index);
                 }
@@ -217,7 +218,10 @@ class App extends Component {
 
         if (end) {return;}
 
-        if (smallIndex.length > 0) {
+        if (hardBlockMove.length > 0) {
+            let randHard = Math.floor(Math.random() * hardBlockMove.length);
+            this.gameArray[hardBlockMove[randHard]] = this.state.currentPlayer;
+        } else if (smallIndex.length > 0) {
             let rand = Math.floor(Math.random() * smallIndex.length);
             this.gameArray[smallIndex[rand]] = this.state.currentPlayer;
         } else {
@@ -256,7 +260,7 @@ class App extends Component {
     changeTextForPlayer(newPlayer) {
 
         this.setState((prevState) => {
-           return ({
+            return ({
                 textForPlayer: (!prevState.currentPlayer) ? "Выберите игрока" : (prevState.gameOver) ? `ПОБЕДИЛ ИГРОК ${newPlayer}` : `Ходит игрок  ${newPlayer}`,
                 classForPlayer: {
                     playerTimes: (newPlayer === "X") ? "activePlayer" : "",
@@ -268,17 +272,19 @@ class App extends Component {
 
     render() {
         return (
-            <div className ='main-block'>
-                <LevelGame currentLevel = {this.state.level} changeLevel = {this.changeLevel} gameOver = {this.state.gameOver} disabledSelect = {this.state.disabledSelect}/>
-                <PlayerPanel currentPlayer = {this.state.currentPlayer} changePlayer = {this.changePlayer}
-                             textForPlayer = {this.state.textForPlayer} victory = {this.state.victory}
-                             classForPlayer = {this.state.classForPlayer}/>
-                <Game changeNewGame = { this.changeNewGame}
-                      allGame = {this.state.allGame}
-                      changeAllGame = {this.changeAllGame}
-                      clearGame = {this.clearGame}
-                      gameArray = {this.state.gameOver}/>
-            </div>
+            <ErrorBoundary>
+                <div className ='main-block'>
+                    <LevelGame currentLevel = {this.state.level} changeLevel = {this.changeLevel} gameOver = {this.state.gameOver} disabledSelect = {this.state.disabledSelect}/>
+                    <PlayerPanel currentPlayer = {this.state.currentPlayer} changePlayer = {this.changePlayer}
+                                 textForPlayer = {this.state.textForPlayer} victory = {this.state.victory}
+                                 classForPlayer = {this.state.classForPlayer}/>
+                    <Game changeNewGame = { this.changeNewGame}
+                          allGame = {this.state.allGame}
+                          changeAllGame = {this.changeAllGame}
+                          clearGame = {this.clearGame}
+                          gameArray = {this.state.gameOver}/>
+                </div>
+            </ErrorBoundary>
         );
     }
 }

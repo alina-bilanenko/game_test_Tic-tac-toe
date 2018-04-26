@@ -133,9 +133,11 @@ td {
   background: gainsboro;
   font-size: 16px;
   font-weight: bold;
- }
+}
 
-.container-buttons button:hover { background: #3a84ff;}
+.container-buttons button:hover {
+  background: #3a84ff;
+}
 
 .activePlayer {
   color: crimson;
